@@ -5,29 +5,25 @@ var Twit = require('twit');
 var config = require('./config');
 var T = new Twit(config)
 
+let tweeted = new Set()
 
-
-// setInterval(tweetIt, 100*20, 'test')
-
-function tweetIt(text){
-	var r = Math.floor(Math.random()*100)
-
-	var tweet = {
-		status: text + r
+function storeUsersTweets(user, setName){
+	var myParams = {
+		q: '(from:'+user+')', 
+		count: 100
 	}
 
-	T.post('statuses/update', tweet, tweeted);
+	T.get('search/tweets', myParams, storeId)
 
-	function tweeted(err, data, response){
-		if (err){
-			console.log(err);
+	function storeId(err, data, response){
+		var tweetIds = data.statuses
+		for(var i=0; i<tweetIds.length; i++){
+			setName.add(tweetIds[i].id_str)
+			// console.log(tweetIds[i].text)
 		}
-		else{
-			console.log(data)
-		}	
 	}
-}
 
+}
 
 
 function retweetThisGuy(username, num){
@@ -50,10 +46,6 @@ function retweetThisGuy(username, num){
 	}
 }
 
-var myargs = process.argv.slice(2);
-
-var guy = myargs[0]
-var no = myargs[1]
-
-retweetThisGuy(guy, no);
-console.log(guy)
+// retweetThisGuy('espn', 10)
+storeUsersTweets('chartreuseman', tweeted)
+console.log(tweeted.size)
