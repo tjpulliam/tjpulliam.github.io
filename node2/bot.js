@@ -5,22 +5,20 @@ var Twit = require('twit');
 var config = require('./config');
 var T = new Twit(config)
 
-
-// tweetIt('@ElonMusk');
+// setInterval(tweetIt, 100*20, 'test')
 
 function tweetIt(text){
 	var r = Math.floor(Math.random()*100)
 
 	var tweet = {
-		// status: r + '-th tweet from the node twit api.  I love ' + text
-		status: text
+		status: text + r
 	}
 
 	T.post('statuses/update', tweet, tweeted);
 
 	function tweeted(err, data, response){
 		if (err){
-			console.log("Something went wrong");
+			console.log(err);
 		}
 		else{
 			console.log(data)
@@ -28,17 +26,26 @@ function tweetIt(text){
 	}
 }
 
-var muskParams = { 
-	q: '(from:realDonaldTrump)', 
-	count: 5
-}
 
-T.get('search/tweets', muskParams, getTweets);
 
-function getTweets(err, data, response) {
-	var tweets = data.statuses;
-	for (var i = 0; i < tweets.length; i++){
-		// console.log(tweets[i].text);
-		tweetIt(tweets[i].text);
+function retweetThisGuy(username, num){
+
+	var params = { 
+		q: '(from:'+username+')', 
+		count: num
+	}
+
+	T.get('search/tweets', params, getTweets);
+
+	function getTweets(err, data, response) {
+		var tweets = data.statuses;
+		for (var i = 0; i < tweets.length; i++){
+			console.log(tweets[i].text);
+			console.log(tweets[i].id_str);
+			T.post('statuses/retweet/:id', { id: tweets[i].id_str })
+			console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~');
+		}
 	}
 }
+
+retweetThisGuy('espn', 10)
