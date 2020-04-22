@@ -4,7 +4,7 @@
   "description": "I am demonstrating npm",
   "main": "bot.js",
   "scripts": {
-    "start" : "node bot.js",
+    "start" : "node bot.js nba 5",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
